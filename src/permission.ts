@@ -8,7 +8,7 @@ import defaultSettings from './settings'
 NProgress.configure({ showSpinner: false })
 
 // 白名单
-const whiteList: Array<string> = ['/login', '/front/home']
+const whiteList: Array<string> = ['/login', '/home']
 
 router.beforeEach((to, from, next) => {
   NProgress.start()

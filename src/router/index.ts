@@ -1,6 +1,5 @@
 import { Router, createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router'
 import Layout from '@/layout/index.vue'
-import LayoutFrontDesk from '@/layout/frontDesk.vue'
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -11,26 +10,14 @@ const routes: Array<RouteRecordRaw> = [
   },
   {
     path: '/',
-    redirect: '/dashboard',
+    redirect: '/home',
     component: Layout,
-    children: [
-      {
-        name: 'Dashboard',
-        path: 'dashboard',
-        component: () => import(/* webpackChunkName: "dashboard" */ '@/views/dashboard/index.vue'),
-        meta: { title: '首页', affix: true, icon: 'el-icon-s-home' }
-      }
-    ]
-  },
-  {
-    path: '/front',
-    component: LayoutFrontDesk,
     children: [
       {
         name: 'home',
         path: 'home',
         component: () => import(/* webpackChunkName: "dashboard" */ '@/views/dashboard/index.vue'),
-        meta: { title: '首页', icon: 'el-icon-s-home' }
+        meta: { title: '首页', affix: true, icon: 'el-icon-s-home' }
       }
     ]
   },
