@@ -74,7 +74,7 @@ export default defineComponent({
   },
   methods: {
     handleLoadData() {
-      console.log('11111')
+      console.log('贷款列表')
     },
 
     // 申请

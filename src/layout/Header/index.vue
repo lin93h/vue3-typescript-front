@@ -11,30 +11,28 @@
             </div>
           </router-link>
         </div>
-        <slot>
-          <div class="login-box">
-            <el-dropdown trigger="click" v-if="token">
-              <span class="basic-info">{{userInfo.nickname}}<i class="el-icon-arrow-down el-icon--right"></i></span>
+        <div class="login-box">
+          <el-dropdown trigger="click" v-if="token">
+            <span class="basic-info">{{userInfo.nickName}}<i class="el-icon-arrow-down el-icon--right"></i></span>
+            <template #dropdown>
               <el-dropdown-menu>
-                <template #dropdown>
-                  <div class="login-out-txt" @click="handleLoginOut">退出</div>
-                </template>
+                <div class="login-out-txt" @click="handleLoginOut">退出</div>
               </el-dropdown-menu>
-            </el-dropdown>
-            <div class="btn-group" v-else>
-              <el-button type="primary" size="small" @click="handleLogin">登录</el-button>
-              <el-button type="primary" size="small" @click="handleLoginOrg">注册</el-button>
-            </div>
+            </template>
+          </el-dropdown>
+          <div class="btn-group" v-else>
+            <el-button type="primary" size="small" @click="handleLogin">登录</el-button>
+            <el-button type="primary" size="small" @click="handleLoginOrg">注册</el-button>
           </div>
-        </slot>
+        </div>
       </div>
       <ul class="home-nav-bar">
         <router-link class="nav-item" to="/home" tag="li">
           <span class="txt">首页</span>
         </router-link>
-        <li class="nav-item" to="/position" tag="li">
+        <router-link class="nav-item" to="/loan" tag="li">
           <span class="txt">政策资讯</span>
-        </li>
+        </router-link>
         <li class="nav-item" to="/notice/1" tag="li">
           <span class="txt">地方专区</span>
         </li>
@@ -118,7 +116,7 @@ export default defineComponent({
 
     // 登录
     handleLogin() {
-      console.log('11111')
+      this.$router.push('/loan/list')
     },
 
     // 企业登录

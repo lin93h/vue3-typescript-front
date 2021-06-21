@@ -38,7 +38,7 @@ export const asyncRoutes: Array<RouteRecordRaw> = [
     meta: { title: '创业贷款' },
     children: [
       {
-        path: 'loan',
+        path: 'list',
         name: 'loanList',
         component: () => import(/* webpackChunkName: "about" */ '@/views/loan/list.vue'),
         meta: { title: '个人创业贷款' }
