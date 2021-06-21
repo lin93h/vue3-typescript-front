@@ -1,30 +1,31 @@
 <template>
   <div class="layout-wrapper">
-    <sidebar></sidebar>
+    <app-header></app-header>
     <div class="main-container">
       <router-view></router-view>
     </div>
+    <app-footer></app-footer>
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue'
+import AppHeader from './Header/index.vue'
+import AppFooter from './Footer/index.vue'
 
-export default {
-  components: {}
-}
+export default defineComponent({
+  components: {
+    AppHeader,
+    AppFooter
+  }
+})
 </script>
 
 <style lang="scss">
 .layout-wrapper {
-  display: flex;
-  flex-flow: row nowrap;
-  position: relative;
-  width: 100%;
-  height: 100%;
+  background: $bg;
   .main-container {
-    flex-grow: 1;
-    display: flex;
-    flex-flow: column nowrap;
+    margin-top: 112px;
   }
 }
 </style>

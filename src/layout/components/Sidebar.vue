@@ -48,18 +48,19 @@ export default defineComponent({
     } as DataType
   },
   computed: {
-    ...mapGetters('app', [
-      'sidebarCollapse'
-    ])
+    ...mapGetters('app', ['sidebarCollapse'])
   },
   created() {
     const routes = this.$router.getRoutes()
-    const dashboard = routes.filter(route => ((route?.name || '') as string).toLocaleLowerCase() === 'dashboard') as RouteRecordRaw[]
+    const dashboard = routes.filter(
+      (route) =>
+        ((route?.name || '') as string).toLocaleLowerCase() === 'dashboard'
+    ) as RouteRecordRaw[]
     this.routes = dashboard.concat(asyncRoutes)
     this.activeRoute = this.$route.path
   },
   watch: {
-    $route: function(value) {
+    $route: function (value) {
       this.activeRoute = value.path
     }
   }

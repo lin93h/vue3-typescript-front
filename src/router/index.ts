@@ -16,8 +16,8 @@ const routes: Array<RouteRecordRaw> = [
       {
         name: 'home',
         path: 'home',
-        component: () => import(/* webpackChunkName: "dashboard" */ '@/views/dashboard/index.vue'),
-        meta: { title: '首页', affix: true, icon: 'el-icon-s-home' }
+        component: () => import(/* webpackChunkName: "home" */ '@/views/home/index.vue'),
+        meta: { title: '首页', icon: 'el-icon-s-home' }
       }
     ]
   },
@@ -31,31 +31,17 @@ const routes: Array<RouteRecordRaw> = [
 
 export const asyncRoutes: Array<RouteRecordRaw> = [
   {
-    path: '/about',
-    name: 'About',
+    path: '/loan',
+    name: 'loan',
     component: Layout,
-    redirect: '/about/adv',
-    meta: { title: '关于' },
+    redirect: '/loan/list',
+    meta: { title: '创业贷款' },
     children: [
       {
-        path: 'adv',
-        name: 'adv1',
-        component: () => import(/* webpackChunkName: "about" */ '@/views/About.vue'),
-        meta: { title: '广告', affix: false }
-      }
-    ]
-  },
-  {
-    path: '/personal',
-    name: 'personal',
-    component: Layout,
-    meta: { title: '个人中心' },
-    children: [
-      {
-        path: 'adv',
-        name: 'adv2',
-        component: () => import(/* webpackChunkName: "about" */ '@/views/Home.vue'),
-        meta: { title: '消息', affix: false }
+        path: 'loan',
+        name: 'loanList',
+        component: () => import(/* webpackChunkName: "about" */ '@/views/loan/list.vue'),
+        meta: { title: '个人创业贷款' }
       }
     ]
   },

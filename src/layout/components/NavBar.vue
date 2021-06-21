@@ -23,7 +23,7 @@
 
 <script>
 import Breadcrumb from '@/layout/components/Breadcrumb.vue'
-import Avatar from '@/assets/logo.png'
+import Avatar from '@/assets/images/logo.png'
 import { logout } from '@/api/user'
 import { mapActions } from 'vuex'
 

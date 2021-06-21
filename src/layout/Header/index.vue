@@ -1,24 +1,20 @@
  <template>
   <div class="app-header">
-    <div class="header-wrapper" :class="animate ? 'dark-bg' : ''">
+    <div class="header-wrapper">
       <div class="header-inner">
         <div class="left-info">
           <router-link class="title-sec" to="/home">
             <img :src="logoImg" alt="logo" class="logo">
             <div class="title-box">
-              <div class="sub-title">福建省补贴性职业培训管理平台</div>
-              <span class="title">创业担保贷款服务网</span>
+              <div class="sub-title">这是一段描述</div>
+              <span class="title">门户站点</span>
             </div>
           </router-link>
         </div>
         <slot>
           <div class="login-box">
-            <!-- <div class="msg-box">消息</div>
-            <div class="avator-box">
-              <el-avatar size="small" :src="avatorImg"></el-avatar>
-            </div> -->
             <el-dropdown trigger="click" v-if="token">
-              <span class="basic-info">{{name}}<i class="el-icon-arrow-down el-icon--right"></i></span>
+              <span class="basic-info">{{userInfo.nickname}}<i class="el-icon-arrow-down el-icon--right"></i></span>
               <el-dropdown-menu>
                 <template #dropdown>
                   <div class="login-out-txt" @click="handleLoginOut">退出</div>
@@ -26,9 +22,8 @@
               </el-dropdown-menu>
             </el-dropdown>
             <div class="btn-group" v-else>
-              <el-button type="primary" size="small" @click="handleLogin">个人登录</el-button>
-              <el-button type="primary" size="small" @click="handleLoginOrg">企业登录</el-button>
-              <!-- <div class="theme-btn register" @click="handleReg">注册</div> -->
+              <el-button type="primary" size="small" @click="handleLogin">登录</el-button>
+              <el-button type="primary" size="small" @click="handleLoginOrg">注册</el-button>
             </div>
           </div>
         </slot>
@@ -51,145 +46,84 @@
         </li>
       </ul>
     </div>
-    <el-dialog class="login-code-dlg" v-model="visible" @close="handleClose" width="450px" :close-on-click-modal="false" append-to-body>
-      <div class="qrcode-wrapper">
-        <div class="title">使用微信扫一扫，一键登录</div>
-        <el-image style="width: 300px; height: 300px" :src="qrcodeUrl" fit="fit"></el-image>
-        <div class="guide-box">
-          <div class="main-txt">请使用微信进行扫描二维码</div>
-          <div class="txt">1、打开手机微信<img class="icon" :src="wechatImg" alt=""></div>
-          <div class="txt">2、点击右上角<img class="icon" :src="iconAddImg" alt="">，再点击扫一扫<img class="icon" :src="saoyisaoImg" alt=""></div>
-        </div>
-      </div>
-    </el-dialog>
   </div>
 </template>
 
-<script>
-import logoImg from '@/assets/images/logo.png';
-import avatorImg from '@/assets/images/avator.png';
-import wechatImg from '@/assets/images/wechat.png';
-import saoyisaoImg from '@/assets/images/sys.jpg';
-import iconAddImg from '@/assets/images/icon-add.png';
-import QRCode from 'qrcode'
-import { mapGetters } from 'vuex';
-import { loginCode, checkLogin, mztLogOut } from '@/api/common'
+<script lang="ts">
+import { defineComponent } from 'vue'
+import logoImg from '@/assets/images/logo.png'
+import avatorImg from '@/assets/images/avator.png'
+import { mapGetters } from 'vuex'
 
-export default {
+interface HeaderType {
+  logoImg: string
+  avatorImg: string
+  visible: boolean
+  code: string
+  qrcodeUrl: string
+  timer: number
+  scrollFlag: boolean
+  scrollTimer: number
+  id: string
+  domain: string
+  webDomain: string
+}
+export default defineComponent({
   data() {
     return {
       logoImg,
       avatorImg,
-      wechatImg,
-      saoyisaoImg,
-      iconAddImg,
       visible: false,
-      code: "",
-      qrcodeUrl: "",
-      timer: null,
+      code: '',
+      qrcodeUrl: '',
+      timer: 0,
       scrollFlag: true,
-      scrollTimer: null,
-      animate: false, // 背景变化
-      id: "",
-      domain: "",
-      webDomain: ""
-    }
+      scrollTimer: 0,
+      id: '',
+      domain: '',
+      webDomain: ''
+    } as HeaderType
   },
   computed: {
-    ...mapGetters([
-      'token',
-      'avatar',
-      'userInfo',
-      'name',
-      'uuid',
-      'roles'
-    ]),
-  },
-  created() {
-    this.domain = process.env.NODE_ENV == 'development' ? 'http://192.168.250.99:8086' : location.origin
-    this.webDomain = location.origin + location.pathname
+    ...mapGetters('user', ['token', 'userInfo', 'roles'])
   },
   mounted() {
     this.handleCheckRoute()
   },
   watch: {
-    $route(val) {
+    $route() {
       this.handleCheckRoute()
     }
   },
   methods: {
     // 检测路由变化
     handleCheckRoute() {
-      if(this.$route.name === 'home') {
-        this.animate = false
-        window.addEventListener("scroll", this.handleScroll)
+      if (this.$route.name === 'home') {
+        window.addEventListener('scroll', this.handleScroll)
       } else {
-        this.animate = true
         window.removeEventListener('scroll', this.handleScroll)
       }
     },
 
     // 页面滚动事件
     handleScroll() {
-      if(this.scrollFlag) {
+      if (this.scrollFlag) {
         this.scrollFlag = false
-        this.scrollTimer = setTimeout(() => {
+        this.scrollTimer = window.setTimeout(() => {
           this.scrollFlag = true
-          let scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop
           clearTimeout(this.scrollTimer)
-          if(scrollTop > 0) {
-            this.animate = true
-          } else {
-            this.animate = false
-          }
         }, 300)
       }
     },
 
     // 登录
     handleLogin() {
-      loginCode().then(res => {
-        let arr = res.data.split('/')
-        let code = arr[arr.length - 1]
-        QRCode.toDataURL(res.data, {
-          width: 200,
-          errorCorrectionLevel: "L",
-          margin: 2
-        }, (err, url) => {
-          this.qrcodeUrl = url;
-          this.visible = true
-          checkLogin({ code }).then(res => {
-            if(res.token) {
-              this.$store.dispatch('user/setTokenInfo', res.token).then(token => {
-                this.visible = false
-                this.$router.push('/loan/list?kind=1')
-              })
-            } else {
-              this.timer = setInterval(() => {
-                checkLogin({ code }).then(res => {
-                  if(res.token) {
-                    clearInterval(this.timer)
-                    this.$store.dispatch('user/setTokenInfo', res.token).then(token => {
-                      this.visible = false
-                      this.$router.push('/loan/list?kind=1')
-                    })
-                  }
-                })
-              }, 3000)
-            }
-          })
-        })
-      })
+      console.log('11111')
     },
 
     // 企业登录
     handleLoginOrg() {
-      if(!this.token) {
-        let timestamp = new Date().getTime()
-        let returnUrl = encodeURIComponent(this.webDomain + "#/loading")
-        let url = '/check/lnb/mztCheckLogin?id=' + timestamp + "&returnUrl=" + returnUrl
-        window.location = this.domain + url
-      }
+      console.log('1111111')
     },
 
     // 清除登录
@@ -204,75 +138,24 @@ export default {
 
     // 退出
     handleLoginOut() {
-      if(this.roles.includes('personRole')) {
-        this.$store.dispatch('user/resetToken').then(res => {
-          this.$alert('退出登录成功', '退出提示', {
-            type: 'warning',
-            callback: () => {
-              this.$router.replace('/')
-            }
-          })
-        })
+      if (this.roles.includes('personRole')) {
       } else {
-        this.$store.dispatch('user/resetToken').then(res => {
-          this.$message.success('退出登录成功')
-          let returnUrl = encodeURIComponent(this.webDomain)
-          let url = this.domain + '/check/lnb/mztLogOut?id=' + this.uuid + "&returnUrl=" + returnUrl
-          window.location = url
-        })
       }
-    },
+    }
   }
-}
+})
 </script>
 
 <style lang="scss">
-.login-code-dlg {
-  .qrcode-wrapper {
-    display: flex;
-    flex-flow: column nowrap;
-    align-items: center;
-    padding-bottom: 20px;
-    .title {
-      font-size: 18px;
-      font-weight: bold;
-      margin-bottom: 30px;
-    }
-    .guide-box {
-      background: #f6f6f6;
-      padding: 20px;
-      border-radius: 5px;
-      .main-txt {
-        font-size: 14px;
-        font-weight: bold;
-        margin-bottom: 10px;
-      }
-      .txt {
-        margin-bottom: 10px;
-        font-size: 12px;
-        display: flex;
-        flex-flow: row nowrap;
-        align-items: center;
-      }
-      .icon {
-        display: inline-block;
-        margin-left: 5px;
-      }
-    }
-  }
-}
 .app-header {
   z-index: 9;
   width: 100%;
   position: fixed;
   left: 0;
   top: 0;
-
+  background: rgba(9, 110, 215, 1);
   .header-wrapper {
     transition: all 0.3s;
-    &.dark-bg {
-      background: rgba(9, 110, 215, 1);
-    }
     .header-inner {
       width: 1184px;
       margin: 0 auto;
@@ -318,7 +201,7 @@ export default {
           transition: all 0.5s;
           cursor: pointer;
           &:hover {
-            color: $theme;
+            color: $blue;
           }
         }
         .avator-box {
@@ -345,8 +228,8 @@ export default {
             border-color: #fff;
             margin-left: 5px;
             &:hover {
-              color: $theme;
-              border-color: $theme;
+              color: $blue;
+              border-color: $blue;
             }
           }
         }
