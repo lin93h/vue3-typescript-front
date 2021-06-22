@@ -31,3 +31,12 @@ export function getInfo() {
     }
   }
 }
+export function applyList() {
+  return {
+    code: 200,
+    msg: '',
+    data: [
+      { areaName: '鼓楼区', companyName: '众智汇云', companyCredit: '123132313', amount: '10000', applyTime: '2021-06-22 00:00:00', statusName: '待审核', status: 1 }
+    ]
+  }
+}

@@ -42,6 +42,12 @@ export const asyncRoutes: Array<RouteRecordRaw> = [
         name: 'loanList',
         component: () => import(/* webpackChunkName: "about" */ '@/views/loan/list.vue'),
         meta: { title: '个人创业贷款' }
+      },
+      {
+        path: 'apply/personal',
+        name: 'applyPersonal',
+        component: () => import(/* webpackChunkName: "apply-personal" */ '@/views/loan/applyPersonal.vue'),
+        meta: { title: '个人创业贷款' }
       }
     ]
   },

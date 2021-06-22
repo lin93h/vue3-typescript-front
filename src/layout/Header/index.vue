@@ -155,7 +155,7 @@ export default defineComponent({
   .header-wrapper {
     transition: all 0.3s;
     .header-inner {
-      width: 1184px;
+      width: 1220px;
       margin: 0 auto;
       height: 64px;
       display: flex;

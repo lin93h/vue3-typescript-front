@@ -57,6 +57,7 @@
 import { defineComponent } from 'vue'
 import { formatDigit, formatDate } from '@/utils/index'
 import { mapGetters } from 'vuex'
+import { applyList } from '@/api/loan'
 
 export default defineComponent({
   data() {
@@ -74,16 +75,19 @@ export default defineComponent({
   },
   methods: {
     handleLoadData() {
-      console.log('贷款列表')
+      applyList({}).then(res => {
+        this.tableData = res.data
+      })
     },
 
     // 申请
     handleApply() {
-      if (this.curKind === '1') {
-        this.$router.push({ path: '/loan/apply/personal' })
-      } else {
-        this.$router.push({ path: '/loan/apply/enterprise' })
-      }
+      this.$router.push({ path: '/loan/apply/personal' })
+      // if (this.curKind === '1') {
+      //   this.$router.push({ path: '/loan/apply/personal' })
+      // } else {
+      //   this.$router.push({ path: '/loan/apply/enterprise' })
+      // }
     },
 
     handleEdit(data: { [key: string]: string }) {

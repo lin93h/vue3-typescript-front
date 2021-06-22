@@ -25,7 +25,12 @@ export default defineComponent({
 .layout-wrapper {
   background: $bg;
   .main-container {
-    margin-top: 112px;
+    margin-top: 122px;
+    min-height: calc(100vh - 112px);
+    .limit-width {
+      width: 1220px;
+      margin: 0 auto;
+    }
   }
 }
 </style>
