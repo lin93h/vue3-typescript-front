@@ -51,7 +51,7 @@
 import { defineComponent } from 'vue'
 import logoImg from '@/assets/images/logo.png'
 import avatorImg from '@/assets/images/avator.png'
-import { mapGetters } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 
 interface HeaderType {
   logoImg: string
@@ -94,6 +94,7 @@ export default defineComponent({
     }
   },
   methods: {
+    ...mapActions('user', ['clearState']),
     // 检测路由变化
     handleCheckRoute() {
       if (this.$route.name === 'home') {
@@ -136,9 +137,8 @@ export default defineComponent({
 
     // 退出
     handleLoginOut() {
-      if (this.roles.includes('personRole')) {
-      } else {
-      }
+      this.clearState()
+      this.$router.replace('/home')
     }
   }
 })

@@ -151,7 +151,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, reactive } from 'vue'
+import { defineComponent, ref } from 'vue'
 import { ElForm } from 'element-plus'
 import { mapActions, mapGetters } from 'vuex'
 import { personnelType, companyType, bankList } from '@/dictionary/index'

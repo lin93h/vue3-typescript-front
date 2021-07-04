@@ -1,5 +1,5 @@
 <template>
-  <div class="login-wrapper flex-row-center-center">
+  <div class="login-wrapper">
     <div class="login-box">
       <div class="box-title">vue3-TS-ElementPlus后台管理系统</div>
       <el-form class="login-form" ref="loginFormRef" :model="loginForm" :rules="loginRules">
@@ -12,7 +12,7 @@
         <el-form-item label="" prop="code">
           <div class="flex-row-center">
             <el-input v-model="loginForm.code" @keyup.enter.stop="handleLogin" clearable></el-input>
-            <img class="graphic-code flex-row-center-center" :src="codeImg" @click="handleGetCode" />
+            <img class="graphic-code" :src="codeImg" @click="handleGetCode" />
           </div>
         </el-form-item>
       </el-form>
@@ -36,7 +36,7 @@ export default defineComponent({
       value: string,
       callback: Function
     ) => {
-      if(!value) {
+      if (!value) {
         callback(new Error('不可少于4个字符'))
       } else {
         callback()
@@ -61,42 +61,41 @@ export default defineComponent({
     }
   },
   computed: {
-    ...mapGetters('user', [
-      'token',
-      'roles',
-      'userInfo'
-    ])
+    ...mapGetters('user', ['token', 'roles', 'userInfo'])
   },
   created() {
     this.handleGetCode()
   },
   methods: {
-    ...mapActions('user', [
-      'setToken',
-      'getUser'
-    ]),
+    ...mapActions('user', ['setToken', 'getUser']),
     // 获取验证码
     handleGetCode() {
-      captchaImage().then((res) => {
-        this.codeImg = (res.img) as string
-        this.loginForm.uuid = res.uuid
-      }).catch((error) => {
-        console.log(error)
-      })
+      captchaImage()
+        .then((res) => {
+          this.codeImg = res.img as string
+          this.loginForm.uuid = res.uuid
+        })
+        .catch((error) => {
+          console.log(error)
+        })
     },
 
     // 登录
     handleLogin() {
-      const loginFormRef = this.$refs['loginFormRef'] as InstanceType<typeof ElForm>
+      const loginFormRef = this.$refs['loginFormRef'] as InstanceType<
+        typeof ElForm
+      >
       loginFormRef.validate((valid) => {
-        if(valid) {
-          login(this.loginForm).then((res) => {
-            this.setToken(res.token).then(() => {
-              this.$router.replace('/dashboard')
+        if (valid) {
+          login(this.loginForm)
+            .then((res) => {
+              this.setToken(res.token).then(() => {
+                this.$router.push('/loan')
+              })
             })
-          }).catch(() => {
-            this.handleGetCode()
-          })
+            .catch(() => {
+              this.handleGetCode()
+            })
         }
       })
     }
@@ -106,10 +105,14 @@ export default defineComponent({
 
 <style lang="scss">
 .login-wrapper {
-  height: 100%;
+  height: 100vh;
   overflow: hidden;
   background: url(../../assets/images/login-bg.jpg) no-repeat #002766;
   background-size: cover;
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  justify-content: center;
   .login-box {
     background: #fff;
     padding: 50px;

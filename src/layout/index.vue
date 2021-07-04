@@ -25,7 +25,7 @@ export default defineComponent({
 .layout-wrapper {
   background: $bg;
   .main-container {
-    margin-top: 122px;
+    margin-top: 112px;
     min-height: calc(100vh - 112px);
     .limit-width {
       width: 1220px;
