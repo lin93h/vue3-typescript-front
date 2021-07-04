@@ -27,7 +27,8 @@ export function getInfo() {
     msg: '',
     roles: ['admin'],
     user: {
-      nickName: 'mock用户'
+      nickName: 'mock用户',
+      remark: '350123199310072351'
     }
   }
 }

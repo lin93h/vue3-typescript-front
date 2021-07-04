@@ -1,7 +1,7 @@
 <template>
   <div class="loan-personal-wrapper">
     <el-row class="form-section" :gutter="24">
-      <el-form ref="form" :model="formData" :rules="rules" label-width="150px">
+      <el-form ref="applyForm" :model="formData" :rules="rules" label-width="150px" inline>
         <el-col :span="12">
           <el-form-item label="姓名" prop="name">
             <el-input v-model="formData.name" :style="formStyle" disabled clearable placeholder="请输入"></el-input>
@@ -146,12 +146,15 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, ref, reactive } from 'vue'
+import { ElForm } from 'element-plus'
 import { mapActions, mapGetters } from 'vuex'
 import { personnelType, companyType, bankList } from '@/dictionary/index'
 import { isPhoneNumber } from '@/utils/validate'
 import { systemDeptList, systemTreeList, qiNiuYunToken } from '@/api/common'
 import { addPerson, personDetail, editPerson } from '@/api/loan'
+import MessageBox from 'element-plus/lib/el-message-box'
+import Message from 'element-plus/lib/el-message'
 
 interface CallBackType {
   (errorMessage?: Error | string): void
@@ -159,7 +162,83 @@ interface CallBackType {
 interface ValidatorType {
   (rule: Array<string>, value: string, callback: CallBackType): void
 }
+interface FileType {
+  uid: string
+  url: string
+}
+interface FormPropType {
+  name: string
+  kind: number
+  sex: string
+  idCard: string
+  certType: string
+  areaName: string
+  manType: string
+  idCardFront: string[]
+  idCardBack: string[]
+  material: Array<FileType>
+  householdName: string[]
+  businessNature: string
+  areaCode: Array<string | number>
+  household: string
+  businessArea: Array<string | number>
+  businessAreaName: Array<string>
+  curHouse: string
+  bank: string
+  status?: number
+  amount: number
+  id?: string | number
+}
+
 export default defineComponent({
+  setup() {
+    const applyForm = ref<InstanceType<typeof ElForm>>()
+    const formData: FormPropType = reactive({
+      name: '',
+      kind: 1,
+      sex: '',
+      idCard: '',
+      certType: '居民身份证',
+      areaName: '',
+      manType: '',
+      idCardFront: [],
+      idCardBack: [],
+      material: [],
+      householdName: [],
+      businessNature: '',
+      areaCode: [],
+      household: '',
+      businessArea: [],
+      businessAreaName: [],
+      curHouse: '',
+      bank: '',
+      amount: 0
+    })
+    const handleValidate = () => {
+      applyForm.value?.validate((valid) => {
+        if (valid) {
+          if (
+            [
+              '网络商户',
+              '农村自主创业农民',
+              '在闽就业创业的台湾同胞',
+              '返乡创业农民工'
+            ].includes(formData.manType) &&
+            !formData.material.length
+          ) {
+            MessageBox.alert('当前借款人身份类别必须上传附件材料', '提示', {
+              type: 'warning'
+            })
+            return false
+          }
+        }
+      })
+    }
+    return {
+      formData,
+      handleValidate
+    }
+  },
   data() {
     const checkMobile: ValidatorType = (rule, value, callback) => {
       if (isPhoneNumber(value)) {
@@ -177,24 +256,24 @@ export default defineComponent({
       showMaterial: false,
       dialogVisible: false,
       dialogImageUrl: '',
-      areaList: [],
+      areaList: [] as Array<{ deptId: number; deptName: string }>,
       areaTreeList: [],
       cascaderProps: {
         expandTrigger: 'hover',
         value: 'id'
       },
-      formData: {
-        name: '',
-        kind: 1,
-        sex: '',
-        idCard: '',
-        certType: '居民身份证',
-        areaName: '',
-        idCardFront: [] as string[],
-        idCardBack: [] as string[],
-        material: [] as Record<string, unknown>[],
-        householdName: [] as string[]
-      },
+      // formData: {
+      //   name: '',
+      //   kind: 1,
+      //   sex: '',
+      //   idCard: '',
+      //   certType: '居民身份证',
+      //   areaName: '',
+      //   idCardFront: [] as string[],
+      //   idCardBack: [] as string[],
+      //   material: [] as Record<string, unknown>[],
+      //   householdName: [] as string[]
+      // },
       idCardFrontList: [] as Record<string, unknown>[],
       idCardBackList: [] as Record<string, unknown>[],
       materialList: [] as string[],
@@ -233,8 +312,8 @@ export default defineComponent({
     this.formData.idCard = idCard
     const gender = idCard.slice(idCard.length - 2, idCard.length - 1)
     this.formData.sex = gender % 2 === 0 ? '女' : '男'
-    this.handleQiniuToken()
-    this.handleLoadData()
+    // this.handleQiniuToken()
+    // this.handleLoadData()
   },
   methods: {
     ...mapActions('user', ['setQiniuToken']),
@@ -290,7 +369,7 @@ export default defineComponent({
 
     // 提交信息
     handleSave() {
-      this.$refs.form.validate((valid) => {
+      ;(this.$refs.form as typeof ElForm).validate((valid: boolean) => {
         if (valid) {
           if (
             [
@@ -301,12 +380,12 @@ export default defineComponent({
             ].includes(this.formData.manType) &&
             !this.formData.material.length
           ) {
-            this.$alert('当前借款人身份类别必须上传附件材料', '提示', {
+            MessageBox.alert('当前借款人身份类别必须上传附件材料', '提示', {
               type: 'warning'
             })
             return false
           }
-          this.$confirm(
+          MessageBox.confirm(
             '本人郑重承诺以上信息均为真实有效，如有虚假，本人愿承担一切法律责任。',
             '承诺书',
             {
@@ -344,7 +423,7 @@ export default defineComponent({
               editPerson(params)
                 .then((res) => {
                   this.loading = false
-                  this.$message.success(res.msg)
+                  Message.success(res.msg)
                   this.$emit('success', res.data)
                 })
                 .catch(() => {
@@ -354,7 +433,7 @@ export default defineComponent({
               addPerson(params)
                 .then((res) => {
                   this.loading = false
-                  this.$message.success(res.msg)
+                  Message.success(res.msg)
                   this.$emit('success', res.data)
                 })
                 .catch(() => {
@@ -363,7 +442,7 @@ export default defineComponent({
             }
           })
         } else {
-          this.$alert('信息未填写完整!', '信息缺失提示', {
+          MessageBox.alert('信息未填写完整!', '信息缺失提示', {
             type: 'error'
           })
         }
@@ -383,7 +462,7 @@ export default defineComponent({
     // 资料证明文件上传成功
     handleMaterial(
       res: Record<string, unknown>,
-      file: Record<string, { uid: string; url: string }>
+      file: FileType
     ) {
       this.formData.material.push({
         uid: file.uid,
@@ -393,14 +472,14 @@ export default defineComponent({
 
     // 文件超出限制
     handleExceed() {
-      this.$alert('图片数量超出限制，请先删除上一张图片再操作', '提示', {
+      MessageBox.alert('图片数量超出限制，请先删除上一张图片再操作', '提示', {
         type: 'warning'
       })
     },
 
     // 上传错误
     handleError(err: string) {
-      this.$alert('图片上传失败，请重新操作' + err, '错误提示', {
+      MessageBox.alert('图片上传失败，请重新操作' + err, '错误提示', {
         type: 'error',
         callback: () => {
           this.handleQiniuToken()
@@ -429,7 +508,7 @@ export default defineComponent({
     },
 
     // 所属地区变化
-    handleChangeArea(value: Record<string, unknown>[]) {
+    handleChangeArea(value: Array<number>) {
       let city = ''
       let area = ''
       this.areaList.map((item) => {
@@ -445,7 +524,7 @@ export default defineComponent({
     },
 
     // 创业所在地变化
-    handleBusinessArea(value: Record<string, unknown>[]) {
+    handleBusinessArea(value: Array<number>) {
       let city = ''
       let area = ''
       this.areaList.map((item) => {
@@ -471,17 +550,17 @@ export default defineComponent({
     },
 
     // 删除证明材料
-    handleRemoveMaterial(file: Record<string, { uid: string; url: string }>) {
+    handleRemoveMaterial(file: FileType) {
       const temp = this.formData.material.map((item) => {
         if (item.uid === file.uid) {
           return null
         }
         return item
       })
-      this.formData.material = temp.filter((item) => item)
+      this.formData.material = temp.filter((item) => item) as FileType[]
     },
 
-    handlePictureCardPreview(file: Record<string, { uid: string; url: string }>) {
+    handlePictureCardPreview(file: FileType) {
       this.dialogImageUrl = file.url
       this.dialogVisible = true
     }

@@ -2,16 +2,21 @@ import { MutationTree, ActionTree, GetterTree } from 'vuex'
 import { getCookieToken, setCookieToken, removeCookieToken } from '@/utils/cookie'
 import { getUserInfo } from '@/api/user'
 
-export interface UserState {
+export type UserState = {
   token: string | undefined | null
   userInfo: Record<string, unknown> | null
   roles: Array<string>
+  qiniuToken: {
+    token?: string
+    domain?: string
+  }
 }
 
 const state: UserState = {
   token: getCookieToken(),
   userInfo: null,
-  roles: []
+  roles: [],
+  qiniuToken: {}
 }
 
 const getters: GetterTree<UserState, unknown> = {
@@ -23,6 +28,9 @@ const getters: GetterTree<UserState, unknown> = {
   },
   roles: state => {
     return state.roles
+  },
+  qiniuToken: state => {
+    return state.qiniuToken
   }
 }
 
